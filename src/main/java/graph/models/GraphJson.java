@@ -4,6 +4,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 
+/**
+ * JSON-mapped representation of a directed graph used for file
+ * This structure is deserialized by graph.utils.JsonGraphLoader
+ */
 public class GraphJson {
     @JsonProperty("directed") public boolean directed;
     @JsonProperty("n") public int n;

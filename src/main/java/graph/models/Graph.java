@@ -2,11 +2,19 @@ package graph.models;
 
 import java.util.*;
 
+/**
+ * Represents a directed weighted graph using adjacency lists.
+ * Stores both outgoing and incoming edge lists for each vertex.
+ */
 public class Graph {
     private final int nodeCount;
     private final Map<Vertex, List<Edge>> outgoing;
     private final Map<Vertex, List<Edge>> incoming;
 
+    /**
+     * Creates an empty directed graph with the specified number of vertices.
+     * @param nodeCount number of vertices in the graph
+     */
     public Graph(int nodeCount) {
         this.nodeCount = nodeCount;
         this.outgoing = new HashMap<>();
@@ -18,6 +26,12 @@ public class Graph {
         }
     }
 
+    /**
+     * Adds a directed edge from one vertex to another with a given weight.
+     * @param from   source vertex
+     * @param to     destination vertex
+     * @param weight edge weight
+     */
     public void addEdge(Vertex from, Vertex to, int weight) {
         Edge edge = new Edge(from, to, weight);
         outgoing.get(from).add(edge);

@@ -8,9 +8,18 @@ import graph.models.LoadedGraph;
 
 import java.nio.file.Paths;
 
+/**
+ * Utility class for loading directed graphs from JSON files.
+ * Uses Jackson to parse a JSON file describing a graph structure into
+ *  Graph object with vertices and weighted edges.
+ */
 public class JsonGraphLoader {
     private static final ObjectMapper mapper = createMapper();
 
+    /**
+     * Configures a Jackson ObjectMapper with standard deserialization options.
+     * @return a pre-configured ObjectMapper instance
+     */
     private static ObjectMapper createMapper(){
         ObjectMapper mapper = new ObjectMapper();
         mapper.findAndRegisterModules();
@@ -18,6 +27,12 @@ public class JsonGraphLoader {
         return mapper;
     }
 
+    /**
+     * Loads a graph from a given JSON file path.
+     * @param path path to the JSON file describing the graph
+     * @return a LoadedGraph object containing the graph, source node, and weight model
+     * @throws RuntimeException if the file cannot be read or parsed
+     */
     public LoadedGraph load(String path) {
         try {
             GraphJson json = mapper.readValue(Paths.get(path).toFile(), GraphJson.class);

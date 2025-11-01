@@ -1,5 +1,9 @@
 package graph.models;
 
+/**
+ * Represents a vertex (node) in a directed graph, identified by a unique ID.
+ * Equality and hash code are based solely on the vertex ID.
+ */
 public class Vertex {
     private final int id;
 
