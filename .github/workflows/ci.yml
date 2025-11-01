@@ -1,0 +1,41 @@
+name: CI(Graphs)
+
+on:
+  push:
+    branches: [master]
+  pull_request: [master]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 22
+      - uses: actions/setup-java@v4
+      - with:
+      - distribution: temurin
+      - java-version: 22
+      - cache: maven
+
+      - name: Verify Maven wrapper or install Maven
+      - run: |
+      - if [ -f mvnw ]; then
+      - echo "Using Maven Wrapper"
+      - chmod +x mvnw
+      - else
+      - echo "Installing Maven"
+      - sudo apt-get update && sudo apt-get install -y maven
+      - fi
+
+      - name: Build and run tests
+      - run: ./mvnw --batch-mode clean verify || mvn --batch-mode clean verify
+
+      - name: Archive test reports
+      - if: always()
+      - uses: actions/upload-artifact@v4
+      - with:
+      - name: junit-reports
+      - path: target/surefire-reports/
