@@ -1,9 +1,10 @@
-name: CI(Graphs)
+name: Algorithms CI
 
 on:
   push:
-    branches: [master]
-  pull_request: [master]
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
 
 jobs:
   build:
@@ -11,31 +12,16 @@ jobs:
 
     steps:
       - name: Checkout repository
-      - uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
       - name: Set up JDK 22
-      - uses: actions/setup-java@v4
-      - with:
-      - distribution: temurin
-      - java-version: 22
-      - cache: maven
+        uses: actions/setup-java@v3
+        with:
+          java-version: '22'
+          distribution: 'temurin'
 
-      - name: Verify Maven wrapper or install Maven
-      - run: |
-      - if [ -f mvnw ]; then
-      - echo "Using Maven Wrapper"
-      - chmod +x mvnw
-      - else
-      - echo "Installing Maven"
-      - sudo apt-get update && sudo apt-get install -y maven
-      - fi
+      - name: Build with Maven
+        run: mvn -B package --file pom.xml
 
-      - name: Build and run tests
-      - run: ./mvnw --batch-mode clean verify || mvn --batch-mode clean verify
-
-      - name: Archive test reports
-      - if: always()
-      - uses: actions/upload-artifact@v4
-      - with:
-      - name: junit-reports
-      - path: target/surefire-reports/
+      - name: Run tests
+        run: mvn test
