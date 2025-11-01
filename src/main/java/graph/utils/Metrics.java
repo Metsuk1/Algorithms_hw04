@@ -20,6 +20,7 @@ public class Metrics {
     public void incrementQueueOperations() { queueOps++; }
     public void startTimer() { startNs = System.nanoTime(); }
     public double getElapsedMs() { return (System.nanoTime() - startNs) / 1e6; }
+    public long getRelaxationsCount() { return relaxations; }
 
     @Override
     public String toString() {
