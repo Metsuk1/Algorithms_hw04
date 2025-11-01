@@ -20,13 +20,18 @@ public class CondensationBuilder {
      * @param sccs  list of strongly connected components (each as a list of vertex IDs)
      * @return a DAG where each node represents an SCC of the original graph
      */
-    public static Graph build(Graph graph, List<List<Integer>> sccs) {
+    public static CondensationResult build(Graph graph, List<List<Integer>> sccs) {
         int superN = sccs.size();
         Map<Integer, Integer> nodeToSuper = new HashMap<>();
-        for (int s = 0; s < superN; s++) {
-            for (int v : sccs.get(s)) nodeToSuper.put(v, s);
-        }
+        List<List<Integer>> superToOriginal = new ArrayList<>();
 
+        for (int superId = 0; superId < superN; superId++) {
+            List<Integer> comp = sccs.get(superId);
+            superToOriginal.add(List.copyOf(comp));
+            for (int nodeId : sccs.get(superId)) {
+                nodeToSuper.put(nodeId, superId);
+            }
+        }
         Graph dag = new Graph(superN);
         Set<String> used = new HashSet<>();
 
@@ -35,11 +40,11 @@ public class CondensationBuilder {
             for (Edge e : graph.getOutgoing(u)) {
                 int sv = nodeToSuper.get(e.getTo().getId());
                 if (su != sv && used.add(su + "->" + sv)) {
-                    dag.addEdge(dag.getVertex(su), dag.getVertex(sv), (int) e.getWeight());
+                    dag.addEdge(dag.getVertex(su), dag.getVertex(sv),  e.getWeight());
                 }
             }
         }
 
-        return dag;
+        return new CondensationResult(dag, nodeToSuper,superToOriginal);
     }
 }

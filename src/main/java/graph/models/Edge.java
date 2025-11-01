@@ -6,9 +6,9 @@ package graph.models;
 public class Edge {
     private final Vertex from;
     private final Vertex to;
-    private final double weight;
+    private final int weight;
 
-    public Edge(Vertex from, Vertex to, double weight) {
+    public Edge(Vertex from, Vertex to, int weight) {
         this.from = from;
         this.to = to;
         this.weight = weight;
@@ -16,5 +16,5 @@ public class Edge {
 
     public Vertex getFrom() { return from; }
     public Vertex getTo() { return to; }
-    public double getWeight() { return weight; }
+    public int getWeight() { return weight; }
 }

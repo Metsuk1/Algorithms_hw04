@@ -40,7 +40,7 @@ public class DagShortestPath {
             for (Edge e : dag.getOutgoing(u)) {
                 metrics.incrementRelaxations();
                 int vId = e.getTo().getId();
-                int cand = (int) (dist[uId] + e.getWeight());
+                int cand =  (dist[uId] + e.getWeight());
 
                 if (cand < dist[vId]) {
                     dist[vId] = cand;

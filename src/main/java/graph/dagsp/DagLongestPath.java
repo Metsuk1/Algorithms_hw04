@@ -1,55 +1,121 @@
 package graph.dagsp;
 
+import graph.models.Edge;
 import graph.models.Graph;
 import graph.models.Vertex;
 import graph.topo.TopologicalSort;
 import graph.utils.Metrics;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
- * Computes the longest (critical) path in a DAG.
- * Implemented by inverting edge weights and running shortest-path logic.
+ * Computes the longest (critical) path in a DAG using dynamic programming
+ * over topological order.
  */
 public class DagLongestPath {
-    private final DagGraphInverter inverter = new DagGraphInverter();
-    private final DagSourceFinder sourceFinder = new DagSourceFinder();
-    private final DagShortestPath spService = new DagShortestPath();
-    private final TopologicalSort topoSort = new TopologicalSort();
 
     /**
-     * Computes the length of the critical path in the DAG.
+     * Computes the length of the longest path from sourceId to any reachable vertex.
      *
      * @param dag      the directed acyclic graph
+     * @param sourceId ID of the starting vertex
      * @param metrics  performance metrics recorder
-     * @return length of the longest path
+     * @return length of the longest path from source
      */
-    public int compute(Graph dag, Metrics metrics) {
+    public int compute(Graph dag, int sourceId, Metrics metrics) {
         metrics.startTimer();
 
-        // 1. Invert graph (reverse edges, negate weights)
-        Graph inv = inverter.invert(dag);
+        int n = dag.getVertexCount();
+        int[] dist = new int[n];
+        Arrays.fill(dist, Integer.MIN_VALUE);
+        dist[sourceId] = 0;
 
-        // 2. Find all source vertices in the original DAG
-        Set<Vertex> sources = sourceFinder.find(dag);
+        // Get topological order
+        graph.topo.TopologicalSort topoSort = new graph.topo.TopologicalSort();
+        List<Integer> topoOrder = topoSort.sort(dag, new Metrics());
 
-        // 3. Perform topological sort once
-        List<Integer> topoOrder = topoSort.sort(inv, new Metrics());
+        // DP: maximize distances in topological order
+        for (int uId : topoOrder) {
+            if (dist[uId] == Integer.MIN_VALUE) continue;
 
-        // 4. Run shortest path on the inverted graph for each source
-        int globalMin = Integer.MAX_VALUE;
-        for (Vertex src : sources) {
-            Metrics localM = new Metrics();
-            var result = spService.compute(inv, src.getId(), topoOrder, localM);
-            int[] dist = result.getDistances();
-            int localMin = Arrays.stream(dist).min().orElse(Integer.MAX_VALUE);
-            globalMin = Math.min(globalMin, localMin);
-            metrics.incrementRelaxations(localM.getRelaxationsCount());
+            Vertex u = dag.getVertex(uId);
+            for (Edge e : dag.getOutgoing(u)) {
+                metrics.incrementRelaxations();
+                int vId = e.getTo().getId();
+                int newDist = dist[uId] + e.getWeight();
+
+                if (newDist > dist[vId]) {
+                    dist[vId] = newDist;
+                }
+            }
         }
 
-        // Negate because edges were inverted
-        return -globalMin;
+        // Find maximum distance (longest path length)
+        int maxDist = 0;
+        for (int d : dist) {
+            if (d != Integer.MIN_VALUE && d > maxDist) {
+                maxDist = d;
+            }
+        }
+
+        return maxDist;
+    }
+
+    /**
+     * Reconstructs the longest path from sourceId.
+     * Returns the path that reaches the farthest vertex.
+     *
+     * @param dag      the directed acyclic graph
+     * @param sourceId ID of the starting vertex
+     * @param metrics  performance metrics recorder
+     * @return list of vertex IDs representing the longest path
+     */
+    public List<Integer> reconstructLongestPath(Graph dag, int sourceId, Metrics metrics) {
+        int n = dag.getVertexCount();
+        int[] dist = new int[n];
+        int[] prev = new int[n];
+        Arrays.fill(dist, Integer.MIN_VALUE);
+        Arrays.fill(prev, -1);
+        dist[sourceId] = 0;
+
+        // Get topological order
+        graph.topo.TopologicalSort topoSort = new graph.topo.TopologicalSort();
+        List<Integer> topoOrder = topoSort.sort(dag, new Metrics());
+
+        // DP with predecessor tracking
+        for (int uId : topoOrder) {
+            if (dist[uId] == Integer.MIN_VALUE) continue;
+
+            Vertex u = dag.getVertex(uId);
+            for (Edge e : dag.getOutgoing(u)) {
+                int vId = e.getTo().getId();
+                int newDist = dist[uId] + e.getWeight();
+
+                if (newDist > dist[vId]) {
+                    dist[vId] = newDist;
+                    prev[vId] = uId;
+                }
+            }
+        }
+
+        // Find vertex with maximum distance
+        int target = sourceId;
+        int maxDist = 0;
+        for (int i = 0; i < n; i++) {
+            if (dist[i] != Integer.MIN_VALUE && dist[i] > maxDist) {
+                maxDist = dist[i];
+                target = i;
+            }
+        }
+
+        // Reconstruct path
+        List<Integer> path = new ArrayList<>();
+        for (int v = target; v != -1; v = prev[v]) {
+            path.add(v);
+            if (v == sourceId) break;
+        }
+        Collections.reverse(path);
+
+        return path;
     }
 }
