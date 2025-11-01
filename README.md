@@ -11,8 +11,17 @@ Single-source Shortest Path on DAG (DP over topo order)
 Critical Path (Longest Path) via edge weight negation + shortest path   
 All algorithms run in O(V + E) — linear time.
 
-## 1. Data Summary
 
+## How to run        
+1.Clone my repo: git clone https://github.com/Metsuk1/Algorithms_hw04      
+2.Open in IDE     
+3.Start the cli(main) class    
+4.See the result      
+5.Example ouput in terminal:     
+<img width="500" height="500" alt="изображение" src="https://github.com/user-attachments/assets/db51f1a3-f92e-40ed-b474-bf25e8beff26" />
+
+
+## 1. Data Summary      
 | Dataset                     | #Nodes | #Edges | Density    | Cyclic        | Weight Model   |
 | --------------------------- | ------ | ------ | ---------- | ------------- | -------------- |
 | `tasks_small_1_cycle.json`  | 8      | 7      | Sparse     | Yes           | Node durations |
