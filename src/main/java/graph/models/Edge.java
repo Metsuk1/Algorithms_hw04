@@ -1,5 +1,8 @@
 package graph.models;
 
+/**
+ * Represents a directed weighted edge between two vertices in a graph.
+ */
 public class Edge {
     private final Vertex from;
     private final Vertex to;
