@@ -18,7 +18,8 @@ All algorithms run in O(V + E) — linear time.
 3.Start the cli(main) class    
 4.See the result      
 5.Example ouput in terminal:     
-<img width="500" height="500" alt="изображение" src="https://github.com/user-attachments/assets/db51f1a3-f92e-40ed-b474-bf25e8beff26" />
+<img width="500" height="500" alt="изображение" src="https://github.com/user-attachments/assets/3b81a724-8861-4774-a908-4d1d8d99c0a6" />
+
 
 
 ## 1. Data Summary      
